@@ -22,8 +22,14 @@ class MessageHandlerBuilder:
         return message_router.handle_message
 
     def _new_command_handlers(self):
+        casts_handler = CastsCommandHandler(
+            url_content_fetcher=fetch_url_contents,
+            blacklisted_youtubers=config['blacklisted_youtubers'] if 'blacklisted_youtubers' in config else [],
+            cast_count=int(config['cast_count']) if 'cast_count' in config else 5
+        )
+
         return {
-            'casts': self._new_casts_handler().get_response_for,
+            'casts': casts_handler.get_response_for,
             'streams': StreamsCommandHandler(fetch_url_contents).get_response_for,
             'nyan': lambda message: ['~=[,,_,,]:3']
         }
