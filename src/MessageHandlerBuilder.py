@@ -4,28 +4,34 @@ from src.MessageRouter import MessageRouter
 from src.StreamsCommandHandler import StreamsCommandHandler
 
 
-class MessageHandler:
+class MessageHandlerBuilder:
     """
     This class is responsible for constructing the object graph needed
     to handle messages and to delegate to it.
     """
 
     def __init__(self, config):
+        self._config = config
 
+    def new_message_handler(self):
+        message_router = MessageRouter(
+            command_handlers=self._new_command_handlers(),
+            default_rate_limit_in_seconds=int(self._config['default_rate_limit']) if 'default_rate_limit' in self._config else 60
+        )
 
-        command_handlers = {
+        return message_router.handle_message
+
+    def _new_command_handlers(self):
+        return {
+            'casts': self._new_casts_handler().get_response_for,
             'streams': StreamsCommandHandler(fetch_url_contents).get_response_for,
-            'casts': CastsCommandHandler(fetch_url_contents).get_response_for,
             'nyan': lambda message: ['~=[,,_,,]:3']
         }
 
-        self._message_router = MessageRouter(
-            command_handlers=command_handlers,
-            default_rate_limit_in_seconds=int(config['default_rate_limit']) if 'default_rate_limit' in config else 60
+    def _new_casts_handler(self):
+        return CastsCommandHandler(
+            url_content_fetcher=fetch_url_contents
         )
-
-    def handle_message(self, message):
-        return self._message_router.handle_message(message)
 
 
 def fetch_url_contents(url):
