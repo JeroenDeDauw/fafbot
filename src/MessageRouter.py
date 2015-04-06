@@ -9,15 +9,12 @@ class MessageRouter:
     """
 
     def __init__(self,
-                 command_handlers=None,
+                 command_handlers={},
                  default_rate_limit_in_seconds=60,
-                 per_command_rate_limit_in_seconds=None):
-
-        if not per_command_rate_limit_in_seconds:
-            per_command_rate_limit_in_seconds = {}
+                 per_command_rate_limit_in_seconds={}):
         self._default_rate_limit = default_rate_limit_in_seconds
-        self._command_handlers = command_handlers if command_handlers is not None else {}
-        self._per_command_rate_limit = per_command_rate_limit_in_seconds if per_command_rate_limit_in_seconds is not None else {}
+        self._command_handlers = command_handlers
+        self._per_command_rate_limit = per_command_rate_limit_in_seconds
 
         self._time_of_last_command_usage = {}
 

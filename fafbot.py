@@ -68,7 +68,8 @@ class BotModeration(ircbot.SingleServerIRCBot):
         try:
             responses = self.message_handler.handle_message(e.arguments[0])
 
-            [self.connection.privmsg("#aeolus", response) for response in responses]
+            for response in responses:
+                self.connection.privmsg("#aeolus", response)
         except:
             pass
 
